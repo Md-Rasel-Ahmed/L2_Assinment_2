@@ -19,7 +19,13 @@ import config from "../../config/config"
     }
 
     const {password,...data}=user as any
-   const accessToken= Jwt.sign(user,config.jwt_secret as string,{expiresIn:"5d"})
+    const jwtPayload={
+      id:user.id,
+      email:user.email,
+      name:user.name,
+      role:user.role
+    }
+   const accessToken= Jwt.sign(jwtPayload,config.jwt_secret as string,{expiresIn:"10d"})
    return {token:accessToken,data}
 }
 export const authService={
