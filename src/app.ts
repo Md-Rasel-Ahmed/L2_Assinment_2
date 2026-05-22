@@ -17,4 +17,7 @@ app.get("/",(req,res)=>{
     })
 })
 app.use(globalErrorHandler)
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end(); 
+});
 export default app;
