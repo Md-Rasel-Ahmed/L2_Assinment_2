@@ -2,7 +2,7 @@ import type { Response } from "express"
 
 type Tresponse<T>={
     success:boolean,
-    message:string,
+    message?:string,
     status:number,
     data?:T
 }

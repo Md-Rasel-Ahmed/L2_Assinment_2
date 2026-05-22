@@ -4,6 +4,7 @@ import  Jwt  from "jsonwebtoken"
 import 'dotenv/config'
 import config from "../../config/config"
 import type { Iuser } from "../../interfaces/user.interface"
+import { createToken } from "../../utils/jwt"
  const loginUser=async(payload:{email:string,password:string})=>{
    const {email,password:paloadPass}=payload
    const result=await pool.query(`
@@ -25,8 +26,8 @@ import type { Iuser } from "../../interfaces/user.interface"
       name:user.name,
       role:user.role
     }
-   const accessToken= Jwt.sign(jwtPayload,config.jwt_secret as string,{expiresIn:"10d"})
-   return {token:accessToken,user:data}
+    const token=createToken(jwtPayload)   
+   return {token,user:data}
 }
 const SingupUserIntoDB=async(payload:Iuser)=>{
     const {name,email,password,role}=payload

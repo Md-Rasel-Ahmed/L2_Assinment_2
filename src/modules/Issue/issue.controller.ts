@@ -13,24 +13,24 @@ const postIssue=async(req:Request,res:Response)=>{
  }
 }
 const getAllIssues=async(req:Request,res:Response)=>{
-   const result=await issueService.getAllIssueFromDB()
-   sendResponse(res,{message:"Data fetched success",status:200,success:true,data:result.rows})
+   const result=await issueService.getAllIssueFromDB(req.query as any)
+   sendResponse(res,{message:"Data fetched success",status:200,success:true,data:result})
 }
 const getSingleIssue=async(req:Request,res:Response)=>{
   const{id}=req.params
    const result=await issueService.getSingleIssueFromDB(id)
-    if(result.rows.length>0){
-         return sendResponse(res,{message:"Data fetched success",status:200,success:true,data:result.rows[0]})
+    if(result){
+         return sendResponse(res,{status:200,success:true,data:result})
     }
      return  sendResponse(res,{message:"Not founded",status:404,success:false,data:{}})
 
   }
 const updateIssue=async(req:Request,res:Response)=>{
   const{id}=req.params
-   const result=await issueService.updateIssuFromDB(req.body,id)
+   const result=await issueService.updateIssuFromDB(req.body,id,req.user)
    console.log(result)
-    if(result.rows.length>0){
-         return sendResponse(res,{message:"Issue updated successfully",status:200,success:true,data:result.rows[0]})
+    if(result){
+         return sendResponse(res,{message:"Issue updated successfully",status:200,success:true,data:result})
     }
      return  sendResponse(res,{message:"Not founded",status:404,success:false,data:{}})
 

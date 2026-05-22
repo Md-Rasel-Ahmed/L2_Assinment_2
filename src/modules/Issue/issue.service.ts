@@ -1,5 +1,6 @@
 import { title } from "node:process"
 import { pool } from "../../config/db"
+import { getSingleIssue } from "../../utils/join"
 
 const postIssueIntoDB=async(payload:{title:string,description:string,type:string},reqUser:any)=>{
    const{description,title,type}=payload
@@ -14,7 +15,9 @@ const postIssueIntoDB=async(payload:{title:string,description:string,type:string
          throw new Error("Issue can not create")
     }
 }
-const getAllIssueFromDB=async()=>{
+const getAllIssueFromDB=async(payload:{sort:string,type:string,status:string})=>{
+    const {sort="newest",type,status}=payload
+    // console.log(sort)
     try {
         const result=await pool.query(`
          SELECT * FROM issues
@@ -33,21 +36,19 @@ const getAllIssueFromDB=async()=>{
          SELECT id, name, role FROM users WHERE id IN (${idString})
         `,)
         const allRepoter=repoter.rows
-        const allIssues: any=[]
-        const arr=[
-            {id:3,name:"X"},
-            {id:5,name:"X"},
-        ]
+        const allIssues:any[]=[]
+      
         for (const issue of data) {
-            for (const r of arr) {
-                  if(issue.reporter_id===r.id){
-                    issue.reporter_id=r
+            for (const reporter of allRepoter) {
+                  if(issue.reporter_id===reporter.id){
+                    delete issue.reporter_id
+                    issue.reporter=reporter
                     allIssues.push(issue)
                   }
             }
         }
-        console.log(allIssues)
-        return result
+        // console.log(allIssues)
+        return allIssues
     } catch (error) {
         throw new Error("Does not fetch data!")
     }
@@ -57,23 +58,35 @@ const getSingleIssueFromDB=async(id:any)=>{
         const result=await pool.query(`
          SELECT * FROM issues WHERE id=$1
         `,[id])
-        return result
+       const data=await getSingleIssue(result.rows[0].reporter_id)
+        console.log(data)
+        return data
     } catch (error) {
         throw new Error("Does not fetch data!")
     }
 }
-const updateIssuFromDB=async(payload:{title:string,description:string},id:any)=>{
+const updateIssuFromDB=async(payload:{title:string,description:string},id:any,user:any)=>{
    const {title,description}=payload
-    try {
-        const result=await pool.query(`
+   try {
+    let result
+       if(user.role==="maintainer"){
+         const update=await pool.query(`
          UPDATE issues
-         SET title =$1, description =$2
+         SET title =$1, description =$2, status ='in_progress'
          WHERE id =$3
          RETURNING *
         `,[title,description,id])
-        return result
+        result=update.rows[0]  
+    }else{
+        const findIssue=await pool.query(`
+            SELECT * FROM issues WHERE id=$1 AND reporter_id=$2
+            `,[id,user.id])
+        console.log(findIssue.rows[0])
+        result=findIssue.rows[0] 
+    }
+     return result
     } catch (error) {
-        throw new Error("Does not fetch data!")
+        throw new Error("Something went wrong")
     }
 }
 const deleteIssueFromDB=async(id:any)=>{

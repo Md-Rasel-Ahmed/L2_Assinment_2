@@ -1,48 +1,22 @@
 import type { NextFunction, Request, Response } from "express"
-import sendResponse from "../utils/sendResponse";
-import Jwt, { type JwtPayload }  from 'jsonwebtoken';
-import config from "../config/config";
-import { pool } from "../config/db";
+
+import { verify_token } from './../utils/jwt';
 
 export const auth=()=>{
     return async (req:Request,res:Response,next:NextFunction)=>{
        const token=req.headers.authorization;
-       const verifyToken=Jwt.verify(token as string,config.jwt_secret as string)as JwtPayload
- if(!token||!verifyToken){
-   return sendResponse(res,{message:"Unthorized access",status:401,success:false})
- }
-const findUserFromDb=await pool.query(`
-        SELECT * FROM users WHERE id=$1
-        `,[verifyToken.id])
-    const user=findUserFromDb.rows[0] 
-    if(!verifyToken?.id===user.id){
-           return sendResponse(res,{message:"Forbidden access",status:403,success:false})
-
-    }
-    req.user=verifyToken
+       const validToken= await verify_token(token as string)
+       req.user=validToken
     next()
     }
 }
-export const roleAccess=()=>{
-    return async (req:Request,res:Response,next:NextFunction)=>{
-       const token=req.headers.authorization;
-       const verifyToken=Jwt.verify(token as string,config.jwt_secret as string)as JwtPayload
- if(!token||!verifyToken){
-   return sendResponse(res,{message:"Unthorized access",status:401,success:false})
- }
-const findUserFromDb=await pool.query(`
-        SELECT * FROM users WHERE email=$1
-        `,[verifyToken.email])
-    const user=findUserFromDb.rows[0] 
-    if(!verifyToken?.email===user.email){
-           return sendResponse(res,{message:"Forbidden access",status:403,success:false})
-
+export const maintainerAccess=()=>{
+    return (req:Request,res:Response,next:NextFunction)=>{
+  if(req.user.role==="maintainer"){
+    next()
+   }else{
+    throw new Error("Your are not allowed  to delete")
+   }
     }
-    
-    if(user.role==="maintainer"){
-      next()
-    }
-    next("You are not allowed to deleted issues!")
-    }
+ 
 }
-
