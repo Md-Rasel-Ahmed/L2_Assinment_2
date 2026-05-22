@@ -81,8 +81,17 @@ const updateIssuFromDB=async(payload:{title:string,description:string},id:any,us
         const findIssue=await pool.query(`
             SELECT * FROM issues WHERE id=$1 AND reporter_id=$2
             `,[id,user.id])
-        console.log(findIssue.rows[0])
-        result=findIssue.rows[0] 
+        if(findIssue.rows[0].status==="open"){
+         const update=await pool.query(`
+         UPDATE issues
+         SET title =$1, description =$2, status ='in_progress'
+         WHERE id =$3
+         RETURNING *
+        `,[title,description,id])
+        result=update.rows[0]
+        }else{
+            throw new Error("The issue is progress can,t update")
+        }
     }
      return result
     } catch (error) {
