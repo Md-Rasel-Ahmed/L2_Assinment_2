@@ -10,6 +10,16 @@ const loginUser=async(req:Request,res:Response)=>{
      return sendResponse(res,{message:"User not found",status:404,success:false})
      
 }
+const singUpUser=async(req:Request,res:Response)=>{
+    const result=await authService.SingupUserIntoDB(req.body);
+    console.log(result)
+    if(!result.email){
+       return sendResponse(res,{message:"User can,t created please try again",status:400,success:false,data:{}})
+    }
+       return sendResponse(res,{message:"User registered successfully",status:201,success:true,data:result})
+
+}
 export const authController={
-    loginUser
+    loginUser,
+    singUpUser
 }

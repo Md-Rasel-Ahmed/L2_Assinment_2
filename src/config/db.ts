@@ -26,7 +26,7 @@ export const initDB=async()=>{
           description TEXT
           CHECK(char_length(description) >= 20) NOT NULL,
           type TEXT
-          CHECK(type IN ('bug','feature_request')) NOT NULL,
+          CHECK(type IN ('bug','feature')) NOT NULL,
           status TEXT DEFAULT 'open',
           CHECK(status IN ('open','in_progress','resolved')),
           reporter_id INT REFERENCES users(id) ON DELETE CASCADE,
