@@ -34,5 +34,17 @@ export const initDB=async()=>{
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
           ) 
         `)
-    console.log("database connection success")
 }
+let isConnected = false;
+
+export const initDBSafe = async () => {
+  if (isConnected) return;
+
+  try {
+    await initDB();
+    isConnected = true;
+    console.log("Database connected connected");
+  } catch (err) {
+    console.error("DB error:", err);
+  }
+};
