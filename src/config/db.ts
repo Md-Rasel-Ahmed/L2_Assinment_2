@@ -26,7 +26,7 @@ export const initDB=async()=>{
           description TEXT
           CHECK(char_length(description) >= 20) NOT NULL,
           type TEXT
-          CHECK(type IN ('bug','feature')) NOT NULL,
+          CHECK(type IN ('bug','feature_request')) NOT NULL,
           status TEXT DEFAULT 'open',
           CHECK(status IN ('open','in_progress','resolved')),
           reporter_id INT REFERENCES users(id) ON DELETE CASCADE,
@@ -34,17 +34,5 @@ export const initDB=async()=>{
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
           ) 
         `)
+    console.log("database connection success")
 }
-let isConnected = false;
-
-export const initDBSafe = async () => {
-  if (isConnected) return;
-
-  try {
-    await initDB();
-    isConnected = true;
-    console.log("Database connected connected");
-  } catch (err) {
-    console.error("DB error:", err);
-  }
-};

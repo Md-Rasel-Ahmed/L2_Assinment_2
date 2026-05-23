@@ -12,6 +12,7 @@ export const auth=()=>{
 }
 export const maintainerAccess=()=>{
     return (req:Request,res:Response,next:NextFunction)=>{
+        console.log(req.user,"acchess role middleware")
   if(req.user.role==="maintainer"){
     next()
    }else{

@@ -18,7 +18,7 @@ const getAllIssues=async(req:Request,res:Response)=>{
 }
 const getSingleIssue=async(req:Request,res:Response)=>{
   const{id}=req.params
-   const result=await issueService.getSingleIssueFromDB(id)
+   const result=await issueService.getSingleIssueFromDB(Number(id))
     if(result){
          return sendResponse(res,{status:200,success:true,data:result})
     }
@@ -27,7 +27,8 @@ const getSingleIssue=async(req:Request,res:Response)=>{
   }
 const updateIssue=async(req:Request,res:Response)=>{
   const{id}=req.params
-   const result=await issueService.updateIssuFromDB(req.body,id,req.user)
+  console.log(req.user)
+   const result=await issueService.updateIssuFromDB(req.body,Number(id),req.user)
    console.log(result)
     if(result){
          return sendResponse(res,{message:"Issue updated successfully",status:200,success:true,data:result})
@@ -37,7 +38,7 @@ const updateIssue=async(req:Request,res:Response)=>{
   }
 const deleteIssue=async(req:Request,res:Response)=>{
   const{id}=req.params
-   const result=await issueService.deleteIssueFromDB(id)
+   const result=await issueService.deleteIssueFromDB(Number(id))
     if(result.rowCount===1){
          return sendResponse(res,{message:"Issue delete successfully",status:200,success:true})
     }

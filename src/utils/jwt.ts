@@ -11,15 +11,16 @@ export const verifyJwt=(token:string)=>{
 
 export const verify_token=async(token:string)=>{
    const validToken:any=verifyJwt(token)
-   
    if(!token||!validToken){
-       throw new Error("Unauthorized access")
-   }
-   const findUserFromDb=await pool.query(`
-        SELECT * FROM users WHERE id=$1
-        `,[validToken.id])
-    const user=findUserFromDb.rows[0] 
-    if(!validToken?.id===user.id){
+     throw new Error("Unauthorized access")
+    }
+    const findUserFromDb=await pool.query(`
+      SELECT * FROM users WHERE id=$1
+      `,[validToken.id])
+      
+      const user=findUserFromDb.rows[0] 
+      console.log(user,"token")
+    if(validToken?.id!==user?.id){
       throw new Error("Forbidden access")
     }
    return validToken;

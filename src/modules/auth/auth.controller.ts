@@ -12,7 +12,6 @@ const loginUser=async(req:Request,res:Response)=>{
 }
 const singUpUser=async(req:Request,res:Response)=>{
     const result=await authService.SingupUserIntoDB(req.body);
-    console.log(result)
     if(!result.email){
        return sendResponse(res,{message:"User can,t created please try again",status:400,success:false,data:{}})
     }
