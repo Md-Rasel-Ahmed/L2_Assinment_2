@@ -1,5 +1,5 @@
-import app from "../src/app";
-import { initDBSafe } from "../src/config/db";
+import app from "../src/app.js";
+import { initDBSafe } from "../src/config/db.js";
 
 initDBSafe();
 
