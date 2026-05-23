@@ -1,7 +1,7 @@
 import app from "./app";
-import { initDB } from "./config/db";
+import { initDBSafe } from "./config/db";
 const port=process.env.PORT||5000
-initDB()
+initDBSafe();
 
 app.listen(port,()=>{
   console.log("Server is running on this port",port)
